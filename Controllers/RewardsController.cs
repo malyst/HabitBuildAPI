@@ -40,7 +40,7 @@ namespace WebApplication4.Controllers
           {
               return NotFound();
           }
-            var reward = await _context.Rewards.FindAsync(id);
+            var reward = await _context.Rewards.Include(m => m.HabitRewards).ThenInclude(s => s.Habits).AsNoTracking().FirstOrDefaultAsync(m => m.RewardId == id);
 
             if (reward == null)
             {
@@ -50,36 +50,6 @@ namespace WebApplication4.Controllers
             return reward;
         }
 
-        // PUT: api/Rewards/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReward(int id, Reward reward)
-        {
-            if (id != reward.RewardId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(reward).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RewardExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/Rewards
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -51,20 +51,17 @@ namespace WebApplication4.Controllers
             return habit;
         }
 
-        // PUT: api/Habits/5
+        // PUT: api/HabitReward/5/6
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutHabit(int id, Habit habit, int rewardId)
+        [HttpPut("{habitId}/{rewardId}")]
+        public async Task<IActionResult> PutHabitReward(int habitId, int rewardId)
         {
-            if (id != habit.HabitId)
-            {
-                return BadRequest();
-            }
+            
+            var habit = await _context.Habits.Include(m => m.HabitRewards).ThenInclude(s => s.Rewards).AsNoTracking().FirstOrDefaultAsync(m => m.HabitId == habitId);
 
             HabitReward hr = new HabitReward();
-            hr.HabitId = id;
+            hr.HabitId = habitId;
             hr.RewardId = rewardId;
-
             habit.HabitRewards.Add(hr);
 
            _context.Entry(habit).State = EntityState.Modified;
@@ -75,7 +72,7 @@ namespace WebApplication4.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HabitExists(id))
+                if (!HabitExists(habitId))
                 {
                     return NotFound();
                 }
