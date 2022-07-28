@@ -56,12 +56,17 @@ namespace WebApplication4.Controllers
         [HttpPut("{habitId}/{rewardId}")]
         public async Task<IActionResult> PutHabitReward(int habitId, int rewardId)
         {
-            
-            var habit = await _context.Habits.Include(m => m.HabitRewards).ThenInclude(s => s.Rewards).AsNoTracking().FirstOrDefaultAsync(m => m.HabitId == habitId);
 
+            Habit habit = await _context.Habits.FindAsync(habitId);
+
+            
             HabitReward hr = new HabitReward();
             hr.HabitId = habitId;
             hr.RewardId = rewardId;
+            if(habit.HabitRewards == null)
+            {
+                habit.HabitRewards = new List<HabitReward>();
+            }
             habit.HabitRewards.Add(hr);
 
            _context.Entry(habit).State = EntityState.Modified;
